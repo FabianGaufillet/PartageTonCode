@@ -20,9 +20,11 @@ import channel from "./routes/channel.js";
 import message from "./routes/message.js";
 import notification from "./routes/notification.js";
 import upload from "./routes/upload.js";
+import * as path from "node:path";
 
 const app = express();
 const server = http.createServer(app);
+const __dirname = import.meta.dirname;
 
 app.use(cors(corsOptions));
 app.use(session(sessionOptions));
@@ -34,10 +36,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload(uploadOptions));
 
+// Fichiers statiques à servir pour Angular
+app.use(express.static(path.join(__dirname, "/../front/dist/front/browser")));
+
 const start = async () => {
   try {
     await connectDB();
     socketHandler(server);
+
+    app.use((req, res, next) => {
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com",
+      );
+      next();
+    });
 
     app.use("/api/user", user);
     app.use("/api/post", post);
@@ -47,6 +60,13 @@ const start = async () => {
     app.use("/api/message", message);
     app.use("/api/notification", notification);
     app.use("/api/upload", upload);
+
+    // Redirection des requêtes vers "index.html" pour le routage Angular
+    app.get("*", (req, res) => {
+      res.sendFile(
+        path.join(__dirname, "/../front/dist/front/browser/index.html"),
+      );
+    });
 
     app.use((error, req, res, _next) => {
       return res.status(error.status || 500).json({

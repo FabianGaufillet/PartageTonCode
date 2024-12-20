@@ -1,4 +1,7 @@
-const allowedOrigins = ["http://localhost:4200"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://partagetoncode.onrender.com",
+];
 const uploadLimit = 2 * 1024 * 1024;
 const tempFolder = import.meta.dirname + "/../public/tmp/";
 const uploadPath = import.meta.dirname + "/../public/uploads/";
