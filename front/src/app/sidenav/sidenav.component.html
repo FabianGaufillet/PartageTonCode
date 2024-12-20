@@ -1,0 +1,17 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened>
+    <mat-nav-list>
+      @for (item of navItems; track item) {
+        <mat-list-item [routerLink]="item.route">
+          <span matListItemIcon>
+            <mat-icon>{{ item.icon }}</mat-icon>
+          </span>
+          <span matListItemLine>{{ item.label }}</span>
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

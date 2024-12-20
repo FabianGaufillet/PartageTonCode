@@ -1,0 +1,149 @@
+<mat-stepper [linear]="true">
+  <mat-step [stepControl]="connectionForm">
+    <ng-template matStepLabel>Informations de connexion</ng-template>
+    <form class="flex flex-col space-y-5 w-1/3" [formGroup]="connectionForm">
+      <mat-file-upload
+        #fileUpload
+        [labelText]="'Avatar (taille maximale : 2 Mo)'"
+        [selectButtonText]="'Choisir une image'"
+        [selectFilesButtonType]="'button'"
+        [uploadButtonText]="'Ajouter'"
+        [uploadButtonType]="'submit'"
+        [allowMultipleFiles]="false"
+        [showUploadButton]="false"
+        [acceptedTypes]="'image/*'"
+        (selectedFilesChanged)="onSelectedFilesChanged($event, fileUpload)">
+      </mat-file-upload>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Nom d'utilisateur</mat-label>
+        <input matInput formControlName="username">
+        <mat-hint>Ex: jeandupont</mat-hint>
+        @if (connectionForm.controls['username'].errors?.['required']) {
+          <mat-error>*Le nom d'utilisateur est requis</mat-error>
+        } @else if (connectionForm.controls['username'].errors?.['minlength']) {
+          <mat-error>*Veuillez choisir un nom d'utilisateur plus long</mat-error>
+        } @else if (connectionForm.controls['username'].errors?.['maxlength']) {
+          <mat-error>*Veuillez choisir un nom d'utilisateur moins long</mat-error>
+        } @else if (connectionForm.controls['username'].errors?.['pattern']) {
+          <mat-error>*Le nom d'utilisateur ne peut contenir que des lettres et des chiffres</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput [type]="hide() ? 'password' : 'text'" formControlName="password">
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="togglePasswordVisibility($event)"
+          [attr.aria-label]="'Changer la visibilité du mot de passe'"
+          [attr.aria-pressed]="hide()">
+          <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (connectionForm.controls['password'].errors?.['required']) {
+          <mat-error>*Le mot de passe est requis</mat-error>
+        }
+        @if (connectionForm.controls['password'].errors?.['pattern']) {
+          <mat-error>*Le mot de passe doit contenir au moins 8 caractères dont au moins une majuscule, une minuscule et un caractère spécial</mat-error>
+        }
+      </mat-form-field>
+      <div class="flex justify-end">
+        <button mat-button [disabled]="connectionForm.invalid" matStepperNext>Suivant</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="personalInfosForm">
+    <ng-template matStepLabel>Informations personnelles</ng-template>
+    <form class="flex flex-col space-y-5 w-1/3" [formGroup]="personalInfosForm">
+      <mat-label>Genre</mat-label>
+      <mat-radio-group aria-labelledby="gender" name="gender" [value]="personalInfosForm.controls['gender'].value" formControlName="gender">
+        @for (gender of genders; track gender) {
+          <mat-radio-button [name]="gender.value" [value]="gender.value">{{ gender.label }}</mat-radio-button>
+        }
+      </mat-radio-group>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="lastname">
+        <mat-hint>Ex: Dupont</mat-hint>
+        @if (personalInfosForm.controls['lastname'].errors?.['required']) {
+          <mat-error>*Le nom est requis</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="firstname">
+        <mat-hint>Ex: Jean</mat-hint>
+        @if (personalInfosForm.controls['firstname'].errors?.['required']) {
+          <mat-error>*Le prénom est requis</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Date de naissance</mat-label>
+        <input matInput [matDatepicker]="dp" formControlName="birthdate" [max]="maxBirthDate" readonly>
+        <mat-hint>Format attendu : JJ/MM/AAAA</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+        <mat-datepicker #dp></mat-datepicker>
+        @if (personalInfosForm.controls['birthdate'].errors?.['required']) {
+          <mat-error>*La date de naissance est requise</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+        <mat-hint>Ex: jean.dupont&#64;domaine.fr</mat-hint>
+        @if (personalInfosForm.controls['email'].errors?.['required']) {
+          <mat-error>*L'email est requis</mat-error>
+        }
+        @if (personalInfosForm.controls['email'].errors?.['pattern']) {
+          <mat-error>*L'email est invalide</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Adresse</mat-label>
+        <textarea matInput formControlName="street" rows="3"></textarea>
+        <mat-hint>Ex: 6, rue des prés</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Code postal</mat-label>
+        <input matInput type="text" formControlName="zipcode">
+        <mat-hint>Ex: 75001</mat-hint>
+        @if (personalInfosForm.controls['zipcode'].errors?.['pattern']) {
+          <mat-error>Code postal non valide</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Ville</mat-label>
+        <input matInput formControlName="city">
+        <mat-hint>Ex: Paris</mat-hint>
+      </mat-form-field>
+
+      <div class="flex justify-end">
+        <button mat-button matStepperPrevious>Précédent</button>
+        <button mat-button [disabled]="personalInfosForm.invalid" matStepperNext>Suivant</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Bienvenue !</ng-template>
+    <div class="flex flex-col space-y-5">
+      <p>Vous êtes sur le point de valider votre inscription.
+        Vous avez encore la possibilité de modifier les informations renseignées en cliquant sur le bouton précédent ci-dessous.</p>
+      <p>Si tout est correct et que vous souhaitez toujours nous rejoindre, il ne vous reste plus qu'à cliquer sur le bouton s'inscrire.</p>
+      <p>Un email vous sera envoyé pour confirmer votre inscription.</p>
+      <div class="flex justify-end">
+        <button mat-button matStepperPrevious>Précédent</button>
+        <button mat-raised-button type="submit" color="primary" [disabled]="connectionForm.invalid || personalInfosForm.invalid" (click)="signup()">S'inscrire</button>
+      </div>
+    </div>
+
+  </mat-step>
+</mat-stepper>
