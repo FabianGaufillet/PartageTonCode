@@ -47,7 +47,7 @@ const start = async () => {
     app.use((req, res, next) => {
       res.setHeader(
         "Content-Security-Policy",
-        "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com",
+        "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; script-src-attr 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com",
       );
       next();
     });
