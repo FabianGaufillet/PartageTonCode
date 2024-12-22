@@ -46,6 +46,9 @@ const start = async () => {
     socketHandler(server);
 
     app.use((req, res, next) => {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
       res.setHeader(
         "Content-Security-Policy",
         "default-src 'self'; " +
