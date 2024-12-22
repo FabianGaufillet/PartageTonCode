@@ -231,7 +231,7 @@ describe("Actions for admin", () => {
 
   it("should sign out user", async () => {
     const res = await request(app)
-      .post("/api/user/signout")
+      .get("/api/user/signout")
       .set("Cookie", adminCookie);
     expect(res.status).toBe(205);
   });

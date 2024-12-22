@@ -19,6 +19,8 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
+import { ApiResponse } from '../interfaces/api-response';
+import { User } from '../interfaces/user';
 
 @Component({
   selector: 'app-signin',
@@ -70,8 +72,16 @@ export class SigninComponent implements OnInit, OnDestroy {
     this.signinSubscription = this.userService
       .signin(this.loginForm.value)
       .subscribe({
-        next: () => {
-          this.router.navigate(['/']);
+        next: (response: ApiResponse) => {
+          const user = response.data;
+          this.userService.setUserStatus({
+            message: 'User is authenticated',
+            data: {
+              authenticated: true,
+              isAdmin: 'admin' === user['role'],
+            },
+          });
+          this.router.navigate(['/home']);
         },
         error: () => {
           this.snackBar.open('Identifiants incorrects', 'OK', {

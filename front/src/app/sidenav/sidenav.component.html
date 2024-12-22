@@ -2,7 +2,7 @@
   <mat-sidenav mode="side" opened>
     <mat-nav-list>
       @for (item of navItems; track item) {
-        <mat-list-item [routerLink]="item.route">
+        <mat-list-item [routerLink]="item.route" [activated]="isActivatedRoute(item.route)">
           <span matListItemIcon>
             <mat-icon>{{ item.icon }}</mat-icon>
           </span>

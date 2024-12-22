@@ -3,19 +3,15 @@ import * as userHelper from "../helpers/userHelper.js";
 
 export const userStatus = async (req, res) => {
   if (req.isAuthenticated()) {
-    return res
-      .status(200)
-      .json({
-        message: "User is authenticated",
-        data: { authenticated: true },
-      });
-  }
-  return res
-    .status(200)
-    .json({
-      message: "User is not authenticated",
-      data: { authenticated: false },
+    return res.status(200).json({
+      message: "User is authenticated",
+      data: { authenticated: true, isAdmin: "admin" === req.user.role },
     });
+  }
+  return res.status(200).json({
+    message: "User is not authenticated",
+    data: { authenticated: false, isAdmin: false },
+  });
 };
 
 export const getUserById = async (req, res) => {

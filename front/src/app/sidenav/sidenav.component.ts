@@ -7,7 +7,7 @@ import {
   MatNavList,
 } from '@angular/material/list';
 import { NavItem } from '../interfaces/nav-item';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
@@ -29,21 +29,46 @@ import { ApiResponse } from '../interfaces/api-response';
 })
 export class SidenavComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
   private userStatusSubscription?: Subscription;
+  private updatedUserStatusSubscription?: Subscription;
   public navItems: NavItem[] = [];
 
   ngOnInit() {
+    this.initializeNavItems();
+    this.handleUserStatusUpdates();
+  }
+
+  private initializeNavItems(): void {
     if (this.userStatusSubscription) {
       this.userStatusSubscription.unsubscribe();
     }
-    this.userStatusSubscription = this.isAuthenticated.subscribe(
-      (isAuthenticated: boolean) => {
-        this.updateNavItems(isAuthenticated);
-      },
-    );
+    this.userStatusSubscription = this.userService
+      .userStatus()
+      .subscribe((response: ApiResponse) => {
+        this.userService.setUserStatus(response);
+        this.updateNavItems(
+          response.data['authenticated'] as boolean,
+          response.data['isAdmin'] as boolean,
+        );
+      });
   }
 
-  private updateNavItems(isAuthenticated: boolean): void {
+  private handleUserStatusUpdates(): void {
+    if (this.updatedUserStatusSubscription) {
+      this.updatedUserStatusSubscription.unsubscribe();
+    }
+    this.updatedUserStatusSubscription = this.userService
+      .getUserStatus()
+      .subscribe((response: ApiResponse) => {
+        this.updateNavItems(
+          response.data['authenticated'] as boolean,
+          response.data['isAdmin'] as boolean,
+        );
+      });
+  }
+
+  private updateNavItems(isAuthenticated: boolean, isAdmin = false): void {
     if (!isAuthenticated) {
       this.navItems = [
         {
@@ -77,28 +102,32 @@ export class SidenavComponent implements OnInit, OnDestroy {
         {
           icon: 'group',
           label: 'Mes amis',
-          route: '',
+          route: 'friends',
         },
         {
           icon: 'list_alt',
           label: 'Mes publications',
-          route: '',
+          route: 'posts',
         },
         {
           icon: 'notifications',
           label: 'Mes notifications',
-          route: '',
+          route: 'notifications',
         },
         {
           icon: 'insert_comment',
           label: 'Mes groupes de discussion',
-          route: '',
+          route: 'channels',
         },
-        {
-          icon: 'star',
-          label: 'Administration',
-          route: '',
-        },
+        ...(isAdmin
+          ? [
+              {
+                icon: 'star',
+                label: 'Administration',
+                route: 'admin',
+              },
+            ]
+          : []),
         {
           icon: 'logout',
           label: 'Déconnexion',
@@ -108,17 +137,17 @@ export class SidenavComponent implements OnInit, OnDestroy {
     }
   }
 
-  get isAuthenticated(): Observable<boolean> {
-    return this.userService.userStatus().pipe(
-      map((userStatus: ApiResponse) => {
-        return !!userStatus.data['authenticated'];
-      }),
-    );
+  public isActivatedRoute(route: string): boolean {
+    return this.router.url.includes(route);
   }
 
   ngOnDestroy() {
     if (this.userStatusSubscription) {
       this.userStatusSubscription.unsubscribe();
+    }
+
+    if (this.updatedUserStatusSubscription) {
+      this.updatedUserStatusSubscription.unsubscribe();
     }
   }
 }

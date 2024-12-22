@@ -2,6 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signout',
@@ -12,6 +13,7 @@ import { MatButton } from '@angular/material/button';
 })
 export class SignoutComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
   private userServiceSubscription?: Subscription;
 
   constructor() {}
@@ -24,7 +26,13 @@ export class SignoutComponent implements OnInit, OnDestroy {
     }
 
     this.userServiceSubscription = this.userService.signout().subscribe({
-      next: () => {},
+      next: () => {
+        this.userService.setUserStatus({
+          message: 'User is signed out',
+          data: { authenticated: false, isAdmin: false },
+        });
+        this.router.navigate(['/home']);
+      },
       error: () => {},
       complete: () => {},
     });

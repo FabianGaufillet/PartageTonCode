@@ -84,7 +84,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Date de naissance</mat-label>
         <input matInput [matDatepicker]="dp" formControlName="birthdate" [max]="maxBirthDate" readonly>
-        <mat-hint>Format attendu : JJ/MM/AAAA</mat-hint>
+        <mat-hint>Vous devez être âgé(e) de 13 ans au minimum</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
         <mat-datepicker #dp></mat-datepicker>
         @if (personalInfosForm.controls['birthdate'].errors?.['required']) {

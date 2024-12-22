@@ -1,5 +1,6 @@
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://localhost:4200",
   "https://partagetoncode.onrender.com",
 ];
 const uploadLimit = 2 * 1024 * 1024;

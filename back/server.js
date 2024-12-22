@@ -20,11 +20,12 @@ import channel from "./routes/channel.js";
 import message from "./routes/message.js";
 import notification from "./routes/notification.js";
 import upload from "./routes/upload.js";
+import * as url from "url";
 import * as path from "node:path";
 
 const app = express();
 const server = http.createServer(app);
-const __dirname = import.meta.dirname;
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 app.use(cors(corsOptions));
 app.use(session(sessionOptions));
@@ -47,7 +48,11 @@ const start = async () => {
     app.use((req, res, next) => {
       res.setHeader(
         "Content-Security-Policy",
-        "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; script-src-attr 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com",
+        "default-src 'self'; " +
+          "style-src 'self' 'unsafe-inline'; " +
+          "script-src 'self' 'unsafe-inline'; " +
+          "script-src-attr 'self' 'unsafe-inline'; " +
+          "font-src 'self' https://fonts.gstatic.com",
       );
       next();
     });

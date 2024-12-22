@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { SigninForm } from '../interfaces/signin-form';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
 import { UserDal } from '../dal/user.dal';
 import { SignupForm } from '../interfaces/signup-form';
@@ -10,21 +10,31 @@ import { SignupForm } from '../interfaces/signup-form';
 })
 export class UserService {
   private readonly userDal = inject(UserDal);
+  private userStatusSubject = new Subject<ApiResponse>();
+
   constructor() {}
 
-  signin(form: SigninForm): Observable<ApiResponse> {
+  public signin(form: SigninForm): Observable<ApiResponse> {
     return this.userDal.signin(form);
   }
 
-  signup(form: SignupForm): Observable<ApiResponse> {
+  public signup(form: SignupForm): Observable<ApiResponse> {
     return this.userDal.signup(form);
   }
 
-  userStatus(): Observable<ApiResponse> {
+  public userStatus(): Observable<ApiResponse> {
     return this.userDal.userStatus();
   }
 
-  signout(): Observable<ApiResponse> {
+  public signout(): Observable<ApiResponse> {
     return this.userDal.signout();
+  }
+
+  public getUserStatus(): Observable<ApiResponse> {
+    return this.userStatusSubject;
+  }
+
+  public setUserStatus(status: ApiResponse): void {
+    this.userStatusSubject.next(status);
   }
 }
