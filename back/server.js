@@ -11,6 +11,7 @@ import passport from "./config/passport.js";
 import sessionOptions from "./config/session.js";
 import corsOptions from "./config/cors.js";
 import uploadOptions from "./config/upload.js";
+import helmetConfiguration from "./config/helmet.js";
 import socketHandler from "./sockets/index.js";
 import user from "./routes/user.js";
 import post from "./routes/post.js";
@@ -31,7 +32,7 @@ app.use(cors(corsOptions));
 app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session({}));
-app.use(helmet());
+app.use(helmet(helmetConfiguration));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -49,14 +50,6 @@ const start = async () => {
       res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
       res.setHeader("Pragma", "no-cache");
       res.setHeader("Expires", "0");
-      res.setHeader(
-        "Content-Security-Policy",
-        "default-src 'self'; " +
-          "style-src 'self' 'unsafe-inline'; " +
-          "script-src 'self' 'unsafe-inline'; " +
-          "script-src-attr 'self' 'unsafe-inline'; " +
-          "font-src 'self' https://fonts.gstatic.com",
-      );
       next();
     });
 
