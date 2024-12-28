@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatFileUploadComponent, MatFileUploadModule } from 'mat-file-upload';
 import { UploadService } from '../services/upload.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, switchMap } from 'rxjs';
 import {
   emailRegex,
   passwordRegex,
@@ -40,6 +40,7 @@ import { UserService } from '../services/user.service';
 import { SignupForm } from '../interfaces/signup-form';
 import { RawSignupForm } from '../interfaces/raw-signup-form';
 import { Router } from '@angular/router';
+import { ApiResponse } from '../interfaces/api-response';
 
 @Component({
   selector: 'app-signup',
@@ -63,7 +64,6 @@ import { Router } from '@angular/router';
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
-  standalone: true,
 })
 export class SignupComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(NonNullableFormBuilder);
@@ -71,15 +71,18 @@ export class SignupComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
-  private uploadSubscription?: Subscription;
+
   private signupSubscription?: Subscription;
   private fileUpload?: MatFileUploadComponent;
+  private fileList?: FileList;
+
   public connectionForm: FormGroup = this.formBuilder.group({});
   public personalInfosForm: FormGroup = this.formBuilder.group({});
   public hide = signal(true);
   public fileId?: string;
   public genders = genders;
   public maxBirthDate = this.calculateMaxBirthDate();
+  public suggestedPassword = this.generateRandomPassword(12);
 
   ngOnInit() {
     this.initForm();
@@ -109,6 +112,31 @@ export class SignupComponent implements OnInit, OnDestroy {
       zipcode: [null, [Validators.pattern('[0-9]{5}')]],
       city: [null],
     });
+  }
+
+  private generateRandomPassword(length = 8) {
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const specialCharacters = '@$!%*?&';
+    const allCharacters = lowercase + uppercase + numbers + specialCharacters;
+
+    let password = '';
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password +=
+      specialCharacters[Math.floor(Math.random() * specialCharacters.length)];
+
+    for (let i = 4; i < length; i++) {
+      password +=
+        allCharacters[Math.floor(Math.random() * allCharacters.length)];
+    }
+
+    return password
+      .split('')
+      .sort(() => Math.random() - 0.5)
+      .join('');
   }
 
   calculateMaxBirthDate(): Date {
@@ -163,86 +191,75 @@ export class SignupComponent implements OnInit, OnDestroy {
       this.signupSubscription.unsubscribe();
     }
 
-    const signUpForm = this.formatSignupForm({
-      ...this.connectionForm.value,
-      ...this.personalInfosForm.value,
-    });
-
-    this.signupSubscription = this.userService.signup(signUpForm).subscribe({
-      next: () => {
-        this.snackBar.open(
-          'Inscription validée ! Authentifiez-vous dès maintenant pour échanger avec les autres utilisateurs',
-          'OK',
-          {
-            duration: 5000,
+    if (this.fileList) {
+      this.signupSubscription = this.uploadFile(this.fileList)
+        .pipe(
+          switchMap((result: ApiResponse) => {
+            if (result.data['display_url'] && result.data['delete_url']) {
+              this.connectionForm
+                .get('avatar')
+                ?.setValue([
+                  result.data['display_url'],
+                  result.data['delete_url'],
+                ]);
+            }
+            const signUpForm = this.formatSignupForm({
+              ...this.connectionForm.value,
+              ...this.personalInfosForm.value,
+            });
+            return this.userService.signup(signUpForm);
+          }),
+        )
+        .subscribe({
+          next: () => {
+            this.snackBar.open(
+              'Inscription validée ! Authentifiez-vous dès maintenant pour échanger avec les autres utilisateurs',
+              'OK',
+              {
+                duration: 5000,
+              },
+            );
+            this.connectionForm.reset();
+            this.personalInfosForm.reset();
+            this.fileUpload?.resetFileInput();
+            this.fileId = undefined;
+            this.fileList = undefined;
+            this.router.navigate(['/signin']);
           },
-        );
-        this.connectionForm.reset();
-        this.personalInfosForm.reset();
-        this.fileUpload?.resetFileInput();
-        this.fileId = undefined;
-        this.router.navigate(['/signin']);
-      },
-      error: (err) => {
-        // TODO : utiliser err pour afficher un message d'erreur plus explicite
-        this.snackBar.open(
-          "Désolé, une erreur est survenue. Veuillez vérifier que les informations fournies sont correctes avant de renouveler l'opération",
-          'OK',
-          {
-            duration: 5000,
+          error: (err) => {
+            this.snackBar.open(
+              "Désolé, une erreur est survenue. Veuillez vérifier que les informations fournies sont correctes avant de renouveler l'opération",
+              'OK',
+              {
+                duration: 5000,
+              },
+            );
           },
-        );
-      },
-    });
-  }
-
-  onSelectedFilesChanged(
-    fileList: FileList,
-    fileUpload: MatFileUploadComponent,
-  ): void {
-    if (!fileList.length) {
-      return;
-    }
-    const file = fileList[0];
-    this.fileUpload = fileUpload;
-    if (file.size > uploadLimit) {
-      this.connectionForm.get('avatar')?.setValue('');
-      this.fileUpload.resetFileInput();
-      this.snackBar.open('Désolé, ce fichier est trop volumineux', 'OK', {
-        duration: 5000,
+        });
+    } else {
+      const signUpForm = this.formatSignupForm({
+        ...this.connectionForm.value,
+        ...this.personalInfosForm.value,
       });
-      return;
-    }
-    this.uploadFile(fileList);
-  }
-
-  uploadFile(fileList: FileList): void {
-    if (!fileList.length) {
-      return;
-    }
-    const extension = fileList[0].name.split('.').pop();
-    if (this.uploadSubscription) {
-      this.uploadSubscription.unsubscribe();
-    }
-    if (!this.fileId) {
-      this.fileId = nanoid();
-    }
-    this.uploadSubscription = this.uploadService
-      .uploadFile(fileList[0], this.fileId)
-      .subscribe({
+      this.signupSubscription = this.userService.signup(signUpForm).subscribe({
         next: () => {
-          this.connectionForm.controls['avatar'].setValue(
-            this.fileId + '.' + extension,
-          );
-          this.snackBar.open('Image importée avec succès', 'OK', {
-            duration: 5000,
-          });
-        },
-        error: () => {
-          this.connectionForm.get('avatar')?.setValue('');
-          this.fileUpload?.resetFileInput();
           this.snackBar.open(
-            "Désolé, une erreur est survenue, votre image n'a pas été importée",
+            'Inscription validée ! Authentifiez-vous dès maintenant pour échanger avec les autres utilisateurs',
+            'OK',
+            {
+              duration: 5000,
+            },
+          );
+          this.connectionForm.reset();
+          this.personalInfosForm.reset();
+          this.fileUpload?.resetFileInput();
+          this.fileId = undefined;
+          this.fileList = undefined;
+          this.router.navigate(['/signin']);
+        },
+        error: (err) => {
+          this.snackBar.open(
+            "Désolé, une erreur est survenue. Veuillez vérifier que les informations fournies sont correctes avant de renouveler l'opération",
             'OK',
             {
               duration: 5000,
@@ -250,12 +267,37 @@ export class SignupComponent implements OnInit, OnDestroy {
           );
         },
       });
+    }
+  }
+
+  onSelectedFilesChanged(
+    fileList: FileList,
+    fileUpload: MatFileUploadComponent,
+  ): void {
+    if (!fileList.length) {
+      this.fileList = undefined;
+      return;
+    }
+    const file = fileList[0];
+    this.fileUpload = fileUpload;
+    if (file.size > uploadLimit) {
+      this.connectionForm.get('avatar')?.setValue('');
+      this.fileUpload.resetFileInput();
+      this.fileList = undefined;
+      this.snackBar.open('Désolé, ce fichier est trop volumineux', 'OK', {
+        duration: 5000,
+      });
+      return;
+    }
+    this.fileList = fileList;
+  }
+
+  uploadFile(fileList: FileList): Observable<ApiResponse> {
+    this.fileId = nanoid();
+    return this.uploadService.uploadFile(fileList[0], this.fileId);
   }
 
   ngOnDestroy() {
-    if (this.uploadSubscription) {
-      this.uploadSubscription.unsubscribe();
-    }
     if (this.signupSubscription) {
       this.signupSubscription.unsubscribe();
     }

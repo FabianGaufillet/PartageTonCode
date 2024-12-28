@@ -38,7 +38,6 @@ import { User } from '../interfaces/user';
   ],
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.scss',
-  standalone: true,
 })
 export class SigninComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(NonNullableFormBuilder);

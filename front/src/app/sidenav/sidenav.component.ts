@@ -1,4 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIcon } from '@angular/material/icon';
 import {
@@ -9,7 +10,7 @@ import {
 import { NavItem } from '../interfaces/nav-item';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
-import { map, Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
 
 @Component({
@@ -25,18 +26,38 @@ import { ApiResponse } from '../interfaces/api-response';
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss',
-  standalone: true,
 })
 export class SidenavComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
+  private readonly breakpointObserver = inject(BreakpointObserver);
+
+  private breakpointStateSubscription?: Subscription;
   private userStatusSubscription?: Subscription;
   private updatedUserStatusSubscription?: Subscription;
+
   public navItems: NavItem[] = [];
+  public isMobile = false;
+  public isSidenavOpened = false;
 
   ngOnInit() {
+    this.initializeBreakpoints();
     this.initializeNavItems();
     this.handleUserStatusUpdates();
+  }
+
+  private initializeBreakpoints(): void {
+    if (this.breakpointStateSubscription) {
+      this.breakpointStateSubscription.unsubscribe();
+    }
+    this.breakpointStateSubscription = this.breakpointObserver
+      .observe(['(max-width: 768px)'])
+      .subscribe((state: BreakpointState) => {
+        this.isMobile = state.matches;
+        if (this.isMobile) {
+          this.isSidenavOpened = false;
+        }
+      });
   }
 
   private initializeNavItems(): void {
@@ -137,11 +158,19 @@ export class SidenavComponent implements OnInit, OnDestroy {
     }
   }
 
+  public toggleSidenav(): void {
+    this.isSidenavOpened = !this.isSidenavOpened;
+  }
+
   public isActivatedRoute(route: string): boolean {
     return this.router.url.includes(route);
   }
 
   ngOnDestroy() {
+    if (this.breakpointStateSubscription) {
+      this.breakpointStateSubscription.unsubscribe();
+    }
+
     if (this.userStatusSubscription) {
       this.userStatusSubscription.unsubscribe();
     }

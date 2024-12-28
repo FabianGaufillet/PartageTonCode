@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
   imports: [MatButton],
   templateUrl: './signout.component.html',
   styleUrl: './signout.component.scss',
-  standalone: true,
 })
 export class SignoutComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);

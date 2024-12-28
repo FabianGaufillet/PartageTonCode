@@ -1,5 +1,13 @@
-<mat-stepper [linear]="true">
-  <mat-step [stepControl]="connectionForm">
+<div class="flex flex-col justify-between items-start h-1/4">
+  <h1 class="text-2xl">Inscription</h1>
+  <p><span class="font-bold">Prêt(e) à révolutionner le monde du développement ?</span> Inscrivez-vous dès maintenant !</p>
+  <p>Vous êtes un développeur / une développeuse confirmé(e) ? Rejoignez notre communauté pour échanger avec d'autres passionés, partager vos connaissances et découvrir les dernières tendances dans le domaine du développement.</p>
+  <p>Vous êtes nouveau / nouvelle dans le développement informatique ? Parfait ! Ici, vous trouverez toutes les ressources dont vous aurez besoin pour vous lancer. De la théorie à la pratique en passant par des exemples concrets, nos membres seront là pour vous accompagner pas à pas.</p>
+  <p>Votre aventure commence ici. Inscrivez-vous dès maintenant !</p>
+</div>
+
+<mat-stepper [linear]="true" class="h-3/4">
+  <mat-step [stepControl]="connectionForm" class="overflow-y-auto">
     <ng-template matStepLabel>Informations de connexion</ng-template>
     <form class="flex flex-col space-y-5 w-1/3" [formGroup]="connectionForm">
       <mat-file-upload
@@ -41,6 +49,7 @@
           [attr.aria-pressed]="hide()">
           <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
+        <mat-hint>Suggestion : {{ suggestedPassword }}</mat-hint>
         @if (connectionForm.controls['password'].errors?.['required']) {
           <mat-error>*Le mot de passe est requis</mat-error>
         }
