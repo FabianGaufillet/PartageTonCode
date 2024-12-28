@@ -3,7 +3,7 @@
                [opened]="!isMobile || isSidenavOpened"
                autoFocus="false"
   (closedStart)="isSidenavOpened = false">
-    <mat-nav-list class="h-full !flex flex-col">
+    <mat-nav-list class="h-full !flex flex-col border-r">
       @for (item of navItems; track item) {
         <mat-list-item [routerLink]="item.route" [activated]="isActivatedRoute(item.route)" [class.mt-auto]="item.icon === 'logout'">
           <span matListItemIcon>

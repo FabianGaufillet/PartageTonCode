@@ -28,13 +28,13 @@ const postSchema = new mongoose.Schema(
       trim: true,
       minLength: [
         postContentMinLength,
-        `Body must be at least ${postContentMinLength} characters`,
+        `Content must be at least ${postContentMinLength} characters`,
       ],
       maxLength: [
         postContentMaxLength,
-        `Body must be less than ${postContentMaxLength} characters`,
+        `Content must be less than ${postContentMaxLength} characters`,
       ],
-      required: [true, "Body is required"],
+      required: [true, "Content is required"],
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,

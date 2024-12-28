@@ -20,7 +20,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ApiResponse } from '../interfaces/api-response';
-import { User } from '../interfaces/user';
 
 @Component({
   selector: 'app-signin',

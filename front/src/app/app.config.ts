@@ -13,6 +13,8 @@ import localeFr from '@angular/common/locales/fr';
 import { registerLocaleData } from '@angular/common';
 import 'moment/locale/fr';
 import { httpInterceptor } from './interceptors/http.interceptor';
+import { providePrimeNG } from 'primeng/config';
+import Material from '@primeng/themes/material';
 
 registerLocaleData(localeFr);
 
@@ -21,6 +23,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: Material,
+      },
+    }),
     provideHttpClient(withInterceptors([httpInterceptor])),
     provideMomentDateAdapter(),
     { provide: LOCALE_ID, useValue: 'fr-FR' },
