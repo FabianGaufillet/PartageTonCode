@@ -29,16 +29,6 @@ export const getAllUsers = async (query, options) => {
 export const signup = async (userObject, password) => {
   try {
     await User.register(new User(userObject), password);
-    if (userObject.avatar) {
-      const tmpPath = tempFolder + userObject.avatar;
-      const finalPath = uploadPath + userObject.avatar;
-      if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath);
-      }
-      if (fs.existsSync(tmpPath)) {
-        await fs.promises.rename(tmpPath, finalPath);
-      }
-    }
     return { status: 201, message: "Registration successful", data: null };
   } catch (error) {
     return { status: 409, message: error.message, data: error };
