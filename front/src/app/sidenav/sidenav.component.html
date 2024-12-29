@@ -1,9 +1,10 @@
 <mat-sidenav-container>
   <mat-sidenav [mode]="isMobile ? 'over' : 'side'"
-               [opened]="!isMobile || isSidenavOpened"
+               [opened]="isSidenavOpened"
                autoFocus="false"
+               [class.pr-4]="!isMobile"
   (closedStart)="isSidenavOpened = false">
-    <mat-nav-list class="h-full !flex flex-col border-r">
+    <mat-nav-list class="h-full !flex flex-col border-r rounded-2xl">
       @for (item of navItems; track item) {
         <mat-list-item [routerLink]="item.route" [activated]="isActivatedRoute(item.route)" [class.mt-auto]="item.icon === 'logout'">
           <span matListItemIcon>
@@ -15,11 +16,12 @@
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content class="!overflow-hidden">
-    @if (isMobile) {
+    <div class="flex justify-start items-center">
       <button mat-icon-button (click)="toggleSidenav()">
         <mat-icon aria-label="Menu">menu</mat-icon>
       </button>
-    }
+      <h1 class="text-2xl">{{ currentPage }}</h1>
+    </div>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

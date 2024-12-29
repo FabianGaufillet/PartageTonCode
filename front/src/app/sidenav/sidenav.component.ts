@@ -12,6 +12,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { Subscription } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-sidenav',
@@ -23,6 +24,7 @@ import { ApiResponse } from '../interfaces/api-response';
     MatListItemIcon,
     RouterOutlet,
     RouterLink,
+    MatButtonModule,
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss',
@@ -54,9 +56,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
       .observe(['(max-width: 768px)'])
       .subscribe((state: BreakpointState) => {
         this.isMobile = state.matches;
-        if (this.isMobile) {
-          this.isSidenavOpened = false;
-        }
+        this.isSidenavOpened = !this.isMobile;
       });
   }
 
@@ -163,7 +163,16 @@ export class SidenavComponent implements OnInit, OnDestroy {
   }
 
   public isActivatedRoute(route: string): boolean {
-    return this.router.url.includes(route);
+    const isActivatedRoute = this.router.url.includes(route);
+    return isActivatedRoute;
+  }
+
+  get currentPage(): string {
+    const currentRoute = this.router.url.split('/')[1];
+    return (
+      this.navItems.find((navItem) => navItem.route === currentRoute)?.label ??
+      ''
+    );
   }
 
   ngOnDestroy() {
