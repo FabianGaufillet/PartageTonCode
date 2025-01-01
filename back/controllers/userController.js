@@ -5,12 +5,16 @@ export const userStatus = async (req, res) => {
   if (req.isAuthenticated()) {
     return res.status(200).json({
       message: "User is authenticated",
-      data: { authenticated: true, isAdmin: "admin" === req.user.role },
+      data: {
+        authenticated: true,
+        isAdmin: "admin" === req.user.role,
+        _id: req.user._id,
+      },
     });
   }
   return res.status(200).json({
     message: "User is not authenticated",
-    data: { authenticated: false, isAdmin: false },
+    data: { authenticated: false, isAdmin: false, _id: null },
   });
 };
 
