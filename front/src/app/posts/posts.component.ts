@@ -1,56 +1,24 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { EditorModule } from 'primeng/editor';
-import {
-  FormGroup,
-  ReactiveFormsModule,
-  NonNullableFormBuilder,
-  Validators,
-} from '@angular/forms';
-import {
-  MatError,
-  MatFormField,
-  MatHint,
-  MatLabel,
-} from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
+import { NewPostComponent } from './new-post/new-post.component';
+import { LastPostsComponent } from './last-posts/last-posts.component';
 
 @Component({
   selector: 'app-posts',
   imports: [
-    ReactiveFormsModule,
-    EditorModule,
-    MatError,
-    MatFormField,
-    MatHint,
-    MatInput,
-    MatLabel,
-    MatButton,
+    MatTabsModule,
+    MatButtonModule,
+    NewPostComponent,
+    LastPostsComponent,
   ],
   templateUrl: './posts.component.html',
   styleUrl: './posts.component.scss',
 })
 export class PostsComponent implements OnInit, OnDestroy {
-  private readonly formBuilder = inject(NonNullableFormBuilder);
-
-  public postForm: FormGroup = this.formBuilder.group({});
-
   constructor() {}
 
-  ngOnInit() {
-    this.initForm();
-  }
-
-  initForm() {
-    this.postForm = this.formBuilder.group({
-      title: ['', [Validators.required]],
-      content: ['', [Validators.required]],
-    });
-  }
-
-  publish() {
-    // TODO : publier le post de l'utilisateur
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {}
 }

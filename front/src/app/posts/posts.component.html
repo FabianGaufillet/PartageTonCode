@@ -1,57 +1,8 @@
-<form [formGroup]="postForm" class="w-full h-screen overflow-y-auto">
-  <mat-form-field appearance="fill" class="w-full">
-    <mat-label>Titre</mat-label>
-    <input matInput formControlName="title">
-    <mat-hint>Ex: Nouveautés apportées par Angular 19</mat-hint>
-    @if (postForm.controls['title'].errors?.['required']) {
-      <mat-error>*Un titre est requis</mat-error>
-    }
-  </mat-form-field>
-
-  <p-editor [styleClass]="'h-80'" formControlName="content">
-    <ng-template #header>
-      <span class="ql-formats">
-        <select class="ql-size">
-          <option value="small"></option>
-          <option selected></option>
-          <option value="large"></option>
-          <option value="huge"></option>
-        </select>
-        <select class="ql-font"></select>
-      </span>
-
-      <span class="ql-formats">
-        <button class="ql-bold" aria-label="Bold"></button>
-        <button class="ql-italic" aria-label="Italic"></button>
-        <button class="ql-underline" aria-label="Underline"></button>
-        <button class="ql-strike" aria-label="Strikethrough"></button>
-      </span>
-
-      <span class="ql-formats">
-        <select class="ql-color"></select>
-        <select class="ql-background"></select>
-      </span>
-
-      <span class="ql-formats">
-        <button class="ql-list" value="ordered"></button>
-        <button class="ql-list" value="bullet"></button>
-        <select class="ql-align"></select>
-      </span>
-
-      <span class="ql-formats">
-        <button class="ql-script" value="sub"></button>
-        <button class="ql-script" value="super"></button>
-      </span>
-
-      <span class="ql-formats">
-        <button class="ql-code-block" aria-label="Code Block"></button>
-        <button class="ql-clean" aria-label="Clean Formatting"></button>
-      </span>
-    </ng-template>
-  </p-editor>
-
-  <div class="flex justify-end">
-    <button mat-raised-button type="submit" color="primary" [disabled]="postForm.invalid" (click)="publish()">Publier</button>
-  </div>
-
-</form>
+<mat-tab-group>
+  <mat-tab label="Dernières publications">
+    <app-last-posts></app-last-posts>
+  </mat-tab>
+  <mat-tab label="Nouvelle publication">
+    <app-new-post></app-new-post>
+  </mat-tab>
+</mat-tab-group>
