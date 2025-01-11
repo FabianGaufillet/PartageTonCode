@@ -38,22 +38,22 @@ const postSchema = new mongoose.Schema(
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
     profile: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
     upvotes: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: "users",
       default: [],
     },
     comments: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Comment",
+      ref: "comments",
       default: [],
     },
   },

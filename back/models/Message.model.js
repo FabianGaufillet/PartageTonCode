@@ -5,12 +5,12 @@ const messageSchema = new mongoose.Schema(
   {
     channel: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Channel",
+      ref: "channels",
       required: [true, "Channel is required"],
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: [true, "Author is required"],
     },
     content: {

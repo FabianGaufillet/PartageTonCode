@@ -1,1 +1,15 @@
-<p>last-posts works!</p>
+@for (post of posts; track post._id) {
+  <mat-card appearance="outlined" class="mt-5">
+    <mat-card-header>
+      <mat-card-title>{{ post.title }}</mat-card-title>
+    </mat-card-header>
+    <mat-divider class="!my-5"></mat-divider>
+    <mat-card-content>
+      <div [innerHTML]="post.content | htmlDecode"></div>
+    </mat-card-content>
+    <mat-divider class="!my-5"></mat-divider>
+    <mat-card-footer class="flex justify-end pr-2">
+      {{ post.author.username }}
+    </mat-card-footer>
+  </mat-card>
+}

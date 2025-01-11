@@ -4,12 +4,12 @@ const channelSchema = new mongoose.Schema(
   {
     opener: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: [true, "Opener is required"],
     },
     members: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: "users",
       default: [],
     },
   },

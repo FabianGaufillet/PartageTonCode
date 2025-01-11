@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const suggestionSchema = new mongoose.Schema({
   by: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "User",
+    ref: "users",
     default: [],
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "users",
     default: [],
   },
 });
@@ -17,22 +17,22 @@ const relationshipSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
     friends: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: "users",
       default: [],
     },
     pendings: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: "users",
       default: [],
     },
     ignored: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: "users",
       default: [],
     },
     suggested: {

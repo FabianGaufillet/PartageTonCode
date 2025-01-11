@@ -12,6 +12,10 @@ export class PostsService {
 
   constructor() {}
 
+  getAllPosts(userId: string): Observable<ApiResponse> {
+    return this.postsDal.getAllPosts(userId);
+  }
+
   publish(post: NewPost): Observable<ApiResponse> {
     return this.postsDal.publish(post);
   }

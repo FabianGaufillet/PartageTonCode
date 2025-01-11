@@ -14,6 +14,12 @@ export class PostsDal {
 
   constructor() {}
 
+  getAllPosts(userId: string): Observable<ApiResponse> {
+    return this.httpClient.get(
+      `${this.postUrl}/allPosts/${userId}`,
+    ) as Observable<ApiResponse>;
+  }
+
   publish(post: NewPost): Observable<ApiResponse> {
     return this.httpClient.post(
       `${this.postUrl}/create`,

@@ -8,12 +8,12 @@ const commentSchema = new mongoose.Schema(
   {
     postId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
+      ref: "posts",
       required: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
     content: {
@@ -31,7 +31,7 @@ const commentSchema = new mongoose.Schema(
     },
     upvotes: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: "users",
       default: [],
     },
   },

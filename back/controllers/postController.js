@@ -23,10 +23,13 @@ export const getAllPosts = async (req, res) => {
       page: page || 1,
       limit: limit || defaultPostsByPage,
       sort: { createdAt: -1 },
-      populate: { path: "comments" },
+      populate: [{ path: "comments" }, { path: "author" }],
     };
-    const { status, message } = await postHelper.getAllPosts(query, options);
-    return res.status(status).json({ message });
+    const { status, message, data } = await postHelper.getAllPosts(
+      query,
+      options,
+    );
+    return res.status(status).json({ message, data });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
