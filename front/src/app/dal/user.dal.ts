@@ -16,6 +16,7 @@ export class UserDal {
   private readonly userStatusUrl = `${environment.apiUrl}/user/status`;
   private readonly signoutUrl = `${environment.apiUrl}/user/signout`;
   private readonly userInfosUrl = `${environment.apiUrl}/user/`;
+  private readonly checkPasswordUrl = `${environment.apiUrl}/user/check-password`;
 
   constructor() {}
 
@@ -40,6 +41,12 @@ export class UserDal {
   userInfos(id: string): Observable<ApiResponse> {
     const url = `${this.userInfosUrl}${id}`;
     return this.httpClient.get(url) as Observable<ApiResponse>;
+  }
+
+  checkPassword(password: string): Observable<ApiResponse> {
+    return this.httpClient.post(this.checkPasswordUrl, {
+      password,
+    }) as Observable<ApiResponse>;
   }
 
   signout(): Observable<ApiResponse> {

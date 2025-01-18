@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import {
   FormGroup,
   NonNullableFormBuilder,
@@ -22,6 +22,8 @@ import { MatError, MatFormField, MatHint } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { AskPasswordComponent } from './ask-password/ask-password.component';
 
 @Component({
   selector: 'app-account',
@@ -44,10 +46,14 @@ export class AccountComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly userService = inject(UserService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
 
+  private action: string = '';
   private fileList?: FileList;
   private fileUpload?: MatFileUploadComponent;
   private userSubscription?: Subscription;
+  private dialogSubscription?: Subscription;
+  private checkPasswordSubscription?: Subscription;
 
   public isLoading = true;
   public userForm: FormGroup = this.formBuilder.group({});
@@ -126,15 +132,70 @@ export class AccountComponent implements OnInit, OnDestroy {
     this.fileList = fileList;
   }
 
+  openDialog(action: string) {
+    if (this.dialogSubscription) {
+      this.dialogSubscription.unsubscribe();
+    }
+
+    this.action = action;
+    const dialogRef = this.dialog.open(AskPasswordComponent, {});
+
+    this.dialogSubscription = dialogRef
+      .afterClosed()
+      .subscribe((result: string) => {
+        if (result) {
+          if (this.action === 'deleteAccount') {
+            this.deleteAccount(result);
+          } else if (this.action === 'changePassword') {
+            this.changePassword(result);
+          }
+        }
+      });
+  }
+
   save() {}
 
-  changePassword() {}
+  changePassword(result: string) {
+    if (this.checkPasswordSubscription) {
+      this.checkPasswordSubscription.unsubscribe();
+    }
+    this.checkPasswordSubscription = this.userService
+      .checkPassword(result)
+      .subscribe({
+        next: () => {
+          console.log('password is correct');
+        },
+        error: () => {
+          console.log('password is incorrect');
+        },
+      });
+  }
 
-  deleteAccount() {}
+  deleteAccount(result: string) {
+    if (this.checkPasswordSubscription) {
+      this.checkPasswordSubscription.unsubscribe();
+    }
+    this.checkPasswordSubscription = this.userService
+      .checkPassword(result)
+      .subscribe({
+        next: () => {
+          console.log('password is correct');
+        },
+        error: () => {
+          console.log('password is incorrect');
+        },
+      });
+  }
 
   ngOnDestroy() {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
+    }
+    if (this.dialogSubscription) {
+      this.dialogSubscription.unsubscribe();
+    }
+    if (this.checkPasswordSubscription) {
+      this.checkPasswordSubscription.unsubscribe();
     }
   }
 }

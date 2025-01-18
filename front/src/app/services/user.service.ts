@@ -41,4 +41,8 @@ export class UserService {
   public userInfos(id: string): Observable<ApiResponse> {
     return this.userDal.userInfos(id);
   }
+
+  public checkPassword(password: string): Observable<ApiResponse> {
+    return this.userDal.checkPassword(password);
+  }
 }
