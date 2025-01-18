@@ -15,6 +15,7 @@ export class UserDal {
   private readonly signinUrl = `${environment.apiUrl}/user/signin`;
   private readonly userStatusUrl = `${environment.apiUrl}/user/status`;
   private readonly signoutUrl = `${environment.apiUrl}/user/signout`;
+  private readonly userInfosUrl = `${environment.apiUrl}/user/`;
 
   constructor() {}
 
@@ -34,6 +35,11 @@ export class UserDal {
 
   userStatus(): Observable<ApiResponse> {
     return this.httpClient.get(this.userStatusUrl) as Observable<ApiResponse>;
+  }
+
+  userInfos(id: string): Observable<ApiResponse> {
+    const url = `${this.userInfosUrl}${id}`;
+    return this.httpClient.get(url) as Observable<ApiResponse>;
   }
 
   signout(): Observable<ApiResponse> {

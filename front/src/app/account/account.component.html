@@ -1,1 +1,90 @@
-<p>account works!</p>
+<p class="mt-5">Ici, sont regroupées vos informations personnelles. Vous pouvez les modifier à tout instant. Pour modifier votre mot de passe, cliquez sur le bouton <span class="font-bold">Changer mon mot de passe</span>. Par mesure de sécurité, vous devrez renseigner votre mot de passe actuel avant de pouvoir procéder à la modification.</p>
+<p class="mt-5">Vous pouvez également supprimer votre compte en cliquant sur le bouton <span class="font-bold">Supprimer mon compte</span>. Pour des mesures de sécurité, il vous sera également demandé de renseigner votre mot de passe actuel pour procéder à cette opération.</p>
+
+@if (!isLoading) {
+  <form class="flex flex-col space-y-5 min-w-96 max-w-lg" [formGroup]="userForm">
+    <mat-label>Genre</mat-label>
+    <mat-radio-group aria-labelledby="gender" name="gender" [value]="userForm.controls['gender'].value" formControlName="gender">
+      @for (gender of genders; track gender) {
+        <mat-radio-button [name]="gender.value" [value]="gender.value">{{ gender.label }}</mat-radio-button>
+      }
+    </mat-radio-group>
+
+    <mat-file-upload
+      #fileUpload
+      [labelText]="'Avatar (taille maximale : 2 Mo)'"
+      [selectButtonText]="'Choisir une image'"
+      [selectFilesButtonType]="'button'"
+      [uploadButtonText]="'Ajouter'"
+      [uploadButtonType]="'submit'"
+      [allowMultipleFiles]="false"
+      [showUploadButton]="false"
+      [acceptedTypes]="'image/*'"
+      (selectedFilesChanged)="onSelectedFilesChanged($event, fileUpload)">
+    </mat-file-upload>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nom d'utilisateur</mat-label>
+      <input matInput formControlName="username">
+      <mat-hint>Ex: jeandupont</mat-hint>
+      @if (userForm.controls['username'].errors?.['required']) {
+        <mat-error>*Le nom d'utilisateur est requis</mat-error>
+      } @else if (userForm.controls['username'].errors?.['minlength']) {
+        <mat-error>*Veuillez choisir un nom d'utilisateur plus long</mat-error>
+      } @else if (userForm.controls['username'].errors?.['maxlength']) {
+        <mat-error>*Veuillez choisir un nom d'utilisateur moins long</mat-error>
+      } @else if (userForm.controls['username'].errors?.['pattern']) {
+        <mat-error>*Le nom d'utilisateur ne peut contenir que des lettres et des chiffres</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="firstname">
+      <mat-hint>Ex: Jean</mat-hint>
+      @if (userForm.controls['firstname'].errors?.['required']) {
+        <mat-error>*Le prénom est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email">
+      <mat-hint>Ex: jean.dupont&#64;domaine.fr</mat-hint>
+      @if (userForm.controls['email'].errors?.['required']) {
+        <mat-error>*L'email est requis</mat-error>
+      }
+      @if (userForm.controls['email'].errors?.['pattern']) {
+        <mat-error>*L'email est invalide</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Adresse</mat-label>
+      <textarea matInput formControlName="street" rows="3"></textarea>
+      <mat-hint>Ex: 6, rue des prés</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Code postal</mat-label>
+      <input matInput type="text" formControlName="zipcode">
+      <mat-hint>Ex: 75001</mat-hint>
+      @if (userForm.controls['zipcode'].errors?.['pattern']) {
+        <mat-error>Code postal non valide</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Ville</mat-label>
+      <input matInput formControlName="city">
+      <mat-hint>Ex: Paris</mat-hint>
+    </mat-form-field>
+
+    <div class="flex flex-col">
+      <button mat-raised-button type="submit" color="primary" [disabled]="userForm.invalid" (click)="save()">Enregistrer les modifications</button>
+      <button mat-raised-button color="primary" (click)="changePassword()">Changer mon mot de passe</button>
+      <button mat-raised-button color="primary" (click)="deleteAccount()">Supprimer mon compte</button>
+    </div>
+
+  </form>
+}

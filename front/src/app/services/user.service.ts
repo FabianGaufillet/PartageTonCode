@@ -37,4 +37,8 @@ export class UserService {
   public setUserStatus(status: ApiResponse): void {
     this.userStatusSubject.next(status);
   }
+
+  public userInfos(id: string): Observable<ApiResponse> {
+    return this.userDal.userInfos(id);
+  }
 }
