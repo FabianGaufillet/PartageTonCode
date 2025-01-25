@@ -115,7 +115,7 @@ export class SigninComponent implements OnInit, OnDestroy {
             .subscribe({
               next: () => {
                 this.snackBar.open(
-                  'Un nouveau mot de passe vous a été envoyé par email.',
+                  'Un nouveau mot de passe vous a été envoyé par email. Pensez à vérifier vos spams.',
                   'OK',
                   {
                     duration: 2000,

@@ -171,7 +171,7 @@ export const resetPassword = async (req, res) => {
     const { status, message, data } = await userHelper.resetPassword(email);
     let info = null;
     if (status === 200) {
-      info = await sendHelper.sendMail({
+      info = await sendHelper.sendEmail({
         from: MAILBOX_USER,
         to: email,
         subject: "Partage ton code - Réinitialisation de votre mot de passe",

@@ -11,6 +11,7 @@ const SMTP_HOST = process.env.SMTP_HOST;
 const SMTP_PORT = process.env.SMTP_PORT;
 const MAILBOX_USER = process.env.MAILBOX_USER;
 const MAILBOX_PASSWORD = process.env.MAILBOX_PASSWORD;
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 
 export {
   PORT,
@@ -23,4 +24,5 @@ export {
   SMTP_PORT,
   MAILBOX_USER,
   MAILBOX_PASSWORD,
+  SENDGRID_API_KEY,
 };
