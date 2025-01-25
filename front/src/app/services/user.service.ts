@@ -45,4 +45,8 @@ export class UserService {
   public checkPassword(password: string): Observable<ApiResponse> {
     return this.userDal.checkPassword(password);
   }
+
+  public resetPassword(email: string): Observable<ApiResponse> {
+    return this.userDal.resetPassword(email);
+  }
 }

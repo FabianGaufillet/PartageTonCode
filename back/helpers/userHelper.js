@@ -1,6 +1,8 @@
 import User from "../models/User.model.js";
 import { tempFolder, uploadPath } from "../utils/constants.js";
 import * as fs from "node:fs";
+import { generate } from "generate-password";
+import passwordGeneratorOptions from "../config/passwordGenerator.js";
 
 export const getUserById = async (id) => {
   try {
@@ -88,6 +90,25 @@ export const checkPassword = async (id, password) => {
       return { status: 401, message: "Wrong Password", data: null };
     }
     return { status: 200, message: "Correct Password", data: user };
+  } catch (error) {
+    return { status: 500, message: error.message, data: error };
+  }
+};
+
+export const resetPassword = async (email) => {
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return { status: 404, message: "User not found", data: null };
+    }
+    const newPassword = generate({ passwordGeneratorOptions });
+    await user.setPassword(newPassword);
+    await user.save();
+    return {
+      status: 200,
+      message: "Password reinitialized",
+      data: newPassword,
+    };
   } catch (error) {
     return { status: 500, message: error.message, data: error };
   }

@@ -1,5 +1,7 @@
 import passport from "../config/passport.js";
 import * as userHelper from "../helpers/userHelper.js";
+import * as sendHelper from "../helpers/sendHelper.js";
+import { MAILBOX_USER } from "../config/env.js";
 
 export const userStatus = async (req, res) => {
   if (req.isAuthenticated()) {
@@ -158,6 +160,24 @@ export const checkPassword = async (req, res) => {
       password,
     );
     return res.status(status).json({ message, data });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, data: error });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const { status, message, data } = await userHelper.resetPassword(email);
+    if (status === 200) {
+      await sendHelper.sendMail({
+        from: MAILBOX_USER,
+        to: email,
+        subject: "Partage ton code - Réinitialisation de votre mot de passe",
+        text: `Votre nouveau mot de passe est : ${data}. Pensez à le changer dans votre profil.`,
+      });
+    }
+    return res.status(status).json({ message, data: null });
   } catch (error) {
     return res.status(500).json({ message: error.message, data: error });
   }

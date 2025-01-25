@@ -17,6 +17,7 @@ export class UserDal {
   private readonly signoutUrl = `${environment.apiUrl}/user/signout`;
   private readonly userInfosUrl = `${environment.apiUrl}/user/`;
   private readonly checkPasswordUrl = `${environment.apiUrl}/user/check-password`;
+  private readonly resetPasswordUrl = `${environment.apiUrl}/user/reset-password`;
 
   constructor() {}
 
@@ -51,5 +52,11 @@ export class UserDal {
 
   signout(): Observable<ApiResponse> {
     return this.httpClient.get(this.signoutUrl) as Observable<ApiResponse>;
+  }
+
+  resetPassword(email: string): Observable<ApiResponse> {
+    return this.httpClient.post(this.resetPasswordUrl, {
+      email,
+    }) as Observable<ApiResponse>;
   }
 }

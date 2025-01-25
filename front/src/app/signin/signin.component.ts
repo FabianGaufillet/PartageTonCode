@@ -20,6 +20,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ApiResponse } from '../interfaces/api-response';
+import { ForgottenPasswordComponent } from './forgotten-password/forgotten-password.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-signin',
@@ -43,7 +45,12 @@ export class SigninComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
+
   private signinSubscription?: Subscription;
+  private dialogSubscription?: Subscription;
+  private reInitializePasswordSubscription?: Subscription;
+
   public loginForm: FormGroup = this.formBuilder.group({});
   public hide = signal(true);
 
@@ -90,9 +97,66 @@ export class SigninComponent implements OnInit, OnDestroy {
       });
   }
 
+  openDialog() {
+    if (this.dialogSubscription) {
+      this.dialogSubscription.unsubscribe();
+    }
+
+    const dialogRef = this.dialog.open(ForgottenPasswordComponent, {});
+
+    this.dialogSubscription = dialogRef.afterClosed().subscribe({
+      next: (result: string) => {
+        if (result) {
+          if (this.reInitializePasswordSubscription) {
+            this.reInitializePasswordSubscription.unsubscribe();
+          }
+          this.reInitializePasswordSubscription = this.userService
+            .resetPassword(result)
+            .subscribe({
+              next: () => {
+                this.snackBar.open(
+                  'Un nouveau mot de passe vous a été envoyé par email.',
+                  'OK',
+                  {
+                    duration: 2000,
+                  },
+                );
+              },
+              error: () => {
+                this.snackBar.open(
+                  "Désolé, une erreur s'est produite durant la réinitialisation de votre mot de passe.",
+                  'OK',
+                  {
+                    duration: 2000,
+                  },
+                );
+              },
+              complete: () => {},
+            });
+        }
+      },
+      error: () => {
+        this.snackBar.open(
+          'Désolé, une erreur est survenue. Veuillez réessayer plus tard.',
+          'OK',
+          {
+            duration: 2000,
+          },
+        );
+      },
+      complete: () => {},
+    });
+  }
+
   ngOnDestroy() {
     if (this.signinSubscription) {
       this.signinSubscription.unsubscribe();
+    }
+    if (this.dialogSubscription) {
+      this.dialogSubscription.unsubscribe();
+    }
+    if (this.reInitializePasswordSubscription) {
+      this.reInitializePasswordSubscription.unsubscribe();
     }
   }
 }

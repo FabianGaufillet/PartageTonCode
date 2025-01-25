@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormGroup,
   NonNullableFormBuilder,
@@ -140,9 +140,8 @@ export class AccountComponent implements OnInit, OnDestroy {
     this.action = action;
     const dialogRef = this.dialog.open(AskPasswordComponent, {});
 
-    this.dialogSubscription = dialogRef
-      .afterClosed()
-      .subscribe((result: string) => {
+    this.dialogSubscription = dialogRef.afterClosed().subscribe({
+      next: (result: string) => {
         if (result) {
           if (this.action === 'deleteAccount') {
             this.deleteAccount(result);
@@ -150,7 +149,11 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.changePassword(result);
           }
         }
-      });
+      },
+      error: (error: any) => {
+        console.log(error);
+      },
+    });
   }
 
   save() {}

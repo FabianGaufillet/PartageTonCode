@@ -33,6 +33,7 @@ router.post(
   userMiddleware.isAuthenticated,
   userController.checkPassword,
 );
+router.post("/reset-password", userController.resetPassword);
 
 router.put(
   "/update/:userId",
