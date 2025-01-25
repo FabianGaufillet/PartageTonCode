@@ -169,15 +169,16 @@ export const resetPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const { status, message, data } = await userHelper.resetPassword(email);
+    let info = null;
     if (status === 200) {
-      await sendHelper.sendMail({
+      info = await sendHelper.sendMail({
         from: MAILBOX_USER,
         to: email,
         subject: "Partage ton code - Réinitialisation de votre mot de passe",
         text: `Votre nouveau mot de passe est : ${data}. Pensez à le changer dans votre profil.`,
       });
     }
-    return res.status(status).json({ message, data: null });
+    return res.status(status).json({ message, data: info });
   } catch (error) {
     return res.status(500).json({ message: error.message, data: error });
   }

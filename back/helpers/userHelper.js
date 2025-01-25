@@ -106,7 +106,7 @@ export const resetPassword = async (email) => {
     await user.save();
     return {
       status: 200,
-      message: "Password reinitialized",
+      message: "Password reset successful.",
       data: newPassword,
     };
   } catch (error) {
