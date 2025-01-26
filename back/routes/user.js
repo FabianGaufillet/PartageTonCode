@@ -9,7 +9,6 @@ const router = express.Router();
 router.get(
   "/allUsers",
   userMiddleware.isAuthenticated,
-  userMiddleware.isAdmin,
   userController.getAllUsers,
 );
 router.get("/status", userController.userStatus);

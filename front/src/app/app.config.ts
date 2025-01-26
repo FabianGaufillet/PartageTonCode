@@ -16,6 +16,8 @@ import { httpInterceptor } from './interceptors/http.interceptor';
 import { providePrimeNG } from 'primeng/config';
 import Material from '@primeng/themes/material';
 import { HtmlDecodePipe } from './pipes/html-decode.pipe';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { FrenchPaginatorIntlService } from './services/french-paginator-intl.service';
 
 registerLocaleData(localeFr);
 
@@ -48,5 +50,6 @@ export const appConfig: ApplicationConfig = {
       },
     },
     HtmlDecodePipe,
+    { provide: MatPaginatorIntl, useClass: FrenchPaginatorIntlService },
   ],
 };

@@ -57,4 +57,8 @@ export class UserService {
   public resetPassword(email: string): Observable<ApiResponse> {
     return this.userDal.resetPassword(email);
   }
+
+  public getAllUsers(page: number): Observable<ApiResponse> {
+    return this.userDal.getAllUsers(page);
+  }
 }

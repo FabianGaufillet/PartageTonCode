@@ -46,7 +46,6 @@ import { HtmlDecodePipe } from '../pipes/html-decode.pipe';
     MatButton,
     AvatarModule,
     AvatarGroupModule,
-    HtmlDecodePipe,
   ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss',

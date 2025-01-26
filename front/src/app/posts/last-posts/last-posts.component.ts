@@ -41,7 +41,6 @@ export class LastPostsComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response: ApiResponse) => {
-          console.log(response.data);
           if (response.data['docs']) {
             this.posts = response.data['docs'] as Post[];
           }
