@@ -6,7 +6,7 @@ export default {
       scriptSrc: ["'self'", "'unsafe-inline'"],
       scriptSrcAttr: ["'self'", "'unsafe-inline'"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:"],
+      imgSrc: ["'self'", "data:", "https://i.ibb.co"],
       objectSrc: ["'none'"],
       frameAncestors: ["'self'"],
       upgradeInsecureRequests: [],
