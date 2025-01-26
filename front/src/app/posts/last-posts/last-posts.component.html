@@ -4,8 +4,8 @@
       <mat-card-title>{{ post.title }}</mat-card-title>
     </mat-card-header>
     <mat-divider class="!my-5"></mat-divider>
-    <mat-card-content>
-      <div [innerHTML]="post.content | htmlDecode"></div>
+    <mat-card-content class="ql-editor">
+      <div [innerHTML]="post.content | htmlDecodeAndSanitize"></div>
     </mat-card-content>
     <mat-divider class="!my-5"></mat-divider>
     <mat-card-footer class="flex justify-end pr-2">
