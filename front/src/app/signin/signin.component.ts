@@ -86,7 +86,7 @@ export class SigninComponent implements OnInit, OnDestroy {
               isAdmin: 'admin' === user['role'],
             },
           });
-          this.router.navigate(['/home']);
+          this.router.navigate(['/account']);
         },
         error: () => {
           this.snackBar.open('Identifiants incorrects', 'OK', {

@@ -4,6 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
 import { UserDal } from '../dal/user.dal';
 import { SignupForm } from '../interfaces/signup-form';
+import { UpdatedUserForm } from '../interfaces/updated-user-form';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,13 @@ export class UserService {
 
   public signup(form: SignupForm): Observable<ApiResponse> {
     return this.userDal.signup(form);
+  }
+
+  public updateUser(
+    userId: string,
+    form: UpdatedUserForm,
+  ): Observable<ApiResponse> {
+    return this.userDal.updateUser(userId, form);
   }
 
   public userStatus(): Observable<ApiResponse> {

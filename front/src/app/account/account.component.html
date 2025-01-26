@@ -2,26 +2,29 @@
 <p class="mt-5">Vous pouvez également supprimer votre compte en cliquant sur le bouton <span class="font-bold">Supprimer mon compte</span>. Pour des mesures de sécurité, il vous sera également demandé de renseigner votre mot de passe actuel pour procéder à cette opération.</p>
 
 @if (!isLoading) {
-  <form class="flex flex-col space-y-5 min-w-96 max-w-lg" [formGroup]="userForm">
+  <form class="flex flex-col space-y-5 min-w-96 max-w-lg mt-5" [formGroup]="userForm">
+    <div class="flex items-center justify-between">
+      <mat-file-upload
+        #fileUpload
+        [labelText]="'Avatar (taille maximale : 2 Mo)'"
+        [selectButtonText]="'Choisir une image'"
+        [selectFilesButtonType]="'button'"
+        [uploadButtonText]="'Ajouter'"
+        [uploadButtonType]="'submit'"
+        [allowMultipleFiles]="false"
+        [showUploadButton]="false"
+        [acceptedTypes]="'image/*'"
+        (selectedFilesChanged)="onSelectedFilesChanged($event, fileUpload)">
+      </mat-file-upload>
+      <p-avatar [image]="avatar" [label]="avatar ? undefined : initials" [size]="'xlarge'" [shape]="'circle'"></p-avatar>
+    </div>
+
     <mat-label>Genre</mat-label>
     <mat-radio-group aria-labelledby="gender" name="gender" [value]="userForm.controls['gender'].value" formControlName="gender">
       @for (gender of genders; track gender) {
         <mat-radio-button [name]="gender.value" [value]="gender.value">{{ gender.label }}</mat-radio-button>
       }
     </mat-radio-group>
-
-    <mat-file-upload
-      #fileUpload
-      [labelText]="'Avatar (taille maximale : 2 Mo)'"
-      [selectButtonText]="'Choisir une image'"
-      [selectFilesButtonType]="'button'"
-      [uploadButtonText]="'Ajouter'"
-      [uploadButtonType]="'submit'"
-      [allowMultipleFiles]="false"
-      [showUploadButton]="false"
-      [acceptedTypes]="'image/*'"
-      (selectedFilesChanged)="onSelectedFilesChanged($event, fileUpload)">
-    </mat-file-upload>
 
     <mat-form-field appearance="fill">
       <mat-label>Nom d'utilisateur</mat-label>
@@ -35,6 +38,15 @@
         <mat-error>*Veuillez choisir un nom d'utilisateur moins long</mat-error>
       } @else if (userForm.controls['username'].errors?.['pattern']) {
         <mat-error>*Le nom d'utilisateur ne peut contenir que des lettres et des chiffres</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="lastname">
+      <mat-hint>Ex: Dupont</mat-hint>
+      @if (userForm.controls['lastname'].errors?.['required']) {
+        <mat-error>*Le nom est requis</mat-error>
       }
     </mat-form-field>
 

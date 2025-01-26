@@ -100,9 +100,10 @@ export const signout = (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const form = req.body;
+    const userId = req.params["userId"];
     const options = { runValidators: true, new: true };
     const { status, message, data } = await userHelper.updateUser(
-      req.user._id,
+      userId,
       form,
       options,
     );

@@ -5,6 +5,7 @@ import { SignupForm } from '../interfaces/signup-form';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
 import { SigninForm } from '../interfaces/signin-form';
+import { UpdatedUserForm } from '../interfaces/updated-user-form';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,7 @@ export class UserDal {
   private readonly userInfosUrl = `${environment.apiUrl}/user/`;
   private readonly checkPasswordUrl = `${environment.apiUrl}/user/check-password`;
   private readonly resetPasswordUrl = `${environment.apiUrl}/user/reset-password`;
+  private readonly updateUserUrl = `${environment.apiUrl}/user/update`;
 
   constructor() {}
 
@@ -31,6 +33,13 @@ export class UserDal {
   signin(form: SigninForm): Observable<ApiResponse> {
     return this.httpClient.post(
       this.signinUrl,
+      form,
+    ) as Observable<ApiResponse>;
+  }
+
+  updateUser(userId: string, form: UpdatedUserForm): Observable<ApiResponse> {
+    return this.httpClient.put(
+      `${this.updateUserUrl}/${userId}`,
       form,
     ) as Observable<ApiResponse>;
   }

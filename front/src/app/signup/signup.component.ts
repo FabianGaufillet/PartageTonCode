@@ -226,7 +226,7 @@ export class SignupComponent implements OnInit, OnDestroy {
             this.fileList = undefined;
             this.router.navigate(['/signin']);
           },
-          error: (err) => {
+          error: () => {
             this.snackBar.open(
               "Désolé, une erreur est survenue. Veuillez vérifier que les informations fournies sont correctes avant de renouveler l'opération",
               'OK',

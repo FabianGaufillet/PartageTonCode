@@ -15,6 +15,7 @@ import 'moment/locale/fr';
 import { httpInterceptor } from './interceptors/http.interceptor';
 import { providePrimeNG } from 'primeng/config';
 import Material from '@primeng/themes/material';
+import { HtmlDecodePipe } from './pipes/html-decode.pipe';
 
 registerLocaleData(localeFr);
 
@@ -46,5 +47,6 @@ export const appConfig: ApplicationConfig = {
         },
       },
     },
+    HtmlDecodePipe,
   ],
 };
