@@ -32,8 +32,8 @@ export const getUserById = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const { page, limit } = req.query;
-    const query = {};
+    const { page, limit, search } = req.query;
+    const query = search ? { username: new RegExp(search, "i") } : {};
     const options = {
       page: page || 1,
       limit: limit || 10,

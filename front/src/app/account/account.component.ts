@@ -250,7 +250,6 @@ export class AccountComponent implements OnInit, OnDestroy {
     if (this.changePasswordSubscription) {
       this.changePasswordSubscription.unsubscribe();
     }
-    console.log(result);
     this.changePasswordSubscription = this.userService
       .changePassword(result)
       .subscribe({

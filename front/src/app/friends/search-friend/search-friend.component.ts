@@ -7,7 +7,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { UserService } from '../../services/user.service';
-import { map, startWith, Subscription, switchMap } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  startWith,
+  Subscription,
+  switchMap,
+} from 'rxjs';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -16,6 +23,9 @@ import { User } from '../../interfaces/user';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { HtmlDecodePipe } from '../../pipes/html-decode.pipe';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-search-friend',
@@ -25,6 +35,9 @@ import { HtmlDecodePipe } from '../../pipes/html-decode.pipe';
     MatButtonModule,
     AvatarModule,
     AvatarGroupModule,
+    MatInputModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './search-friend.component.html',
   styleUrl: './search-friend.component.scss',
@@ -36,15 +49,33 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly htmlDecodePipe = inject(HtmlDecodePipe);
 
   private userServiceSubscription?: Subscription;
+  private searchSubscription?: Subscription;
 
   public displayedColumns: string[] = ['username', 'name', 'email', 'actions'];
   public isLoadingResults = true;
   public users: User[] = [];
   public resultsLength = 0;
+  public searchControl = new FormControl('');
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
+
+    this.searchSubscription = this.searchControl.valueChanges
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe({
+        next: (value: string | null) => {
+          this.applyFilter(value);
+        },
+        error: (error) => {
+          console.error(error);
+        },
+        complete: () => {},
+      });
+  }
 
   ngAfterViewInit() {
     if (this.userServiceSubscription) {
@@ -75,6 +106,28 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  applyFilter(filterValue: string | null) {
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+
+    this.isLoadingResults = true;
+    this.userServiceSubscription = this.userService
+      .getAllUsers(1, filterValue ?? '')
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.isLoadingResults = false;
+          this.users = response.data['docs'] as User[];
+          this.resultsLength = response.data['totalDocs'] as number;
+        },
+        error: (error) => {
+          this.isLoadingResults = false;
+          this.users = [];
+          this.resultsLength = 0;
+        },
+      });
+  }
+
   addFriend(user: User) {
     console.log('add friend');
   }
@@ -95,6 +148,9 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.userServiceSubscription) {
       this.userServiceSubscription.unsubscribe();
+    }
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
   }
 }

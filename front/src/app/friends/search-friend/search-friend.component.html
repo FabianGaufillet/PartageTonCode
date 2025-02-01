@@ -1,3 +1,8 @@
+<mat-form-field class="w-full">
+  <mat-label>Rechercher un utilisateur...</mat-label>
+  <input matInput [formControl]="searchControl" placeholder="Ex. Michel">
+</mat-form-field>
+
 <table mat-table [dataSource]="users">
   <ng-container matColumnDef="username">
     <th mat-header-cell *matHeaderCellDef>Nom d'utilisateur</th>

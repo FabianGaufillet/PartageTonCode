@@ -3,5 +3,5 @@ import { Post } from './post';
 
 export interface ApiResponse {
   message: string;
-  data: { [key: string]: string | boolean | number | User | Post[] };
+  data: { [key: string]: string | boolean | number | User | User[] | Post[] };
 }

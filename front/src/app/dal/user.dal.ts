@@ -79,9 +79,9 @@ export class UserDal {
     }) as Observable<ApiResponse>;
   }
 
-  getAllUsers(page: number): Observable<ApiResponse> {
+  getAllUsers(page: number, search?: string): Observable<ApiResponse> {
     return this.httpClient.get(
-      `${this.allUsersUrl}?page=${page}`,
+      `${this.allUsersUrl}?page=${page}` + (search ? `&search=${search}` : ''),
     ) as Observable<ApiResponse>;
   }
 }
