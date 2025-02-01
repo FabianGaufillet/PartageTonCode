@@ -15,7 +15,10 @@ import {
   NonNullableFormBuilder,
   Validators,
   ReactiveFormsModule,
+  ValidatorFn,
+  ValidationErrors,
 } from '@angular/forms';
+import { passwordRegex } from '../../utils/constants';
 
 @Component({
   selector: 'app-ask-password',
@@ -46,9 +49,31 @@ export class AskPasswordComponent implements OnInit {
   }
 
   initForm() {
-    this.passwordForm = this.formBuilder.group({
-      password: ['', [Validators.required]],
-    });
+    this.passwordForm = this.formBuilder.group(
+      {
+        oldPassword: ['', [Validators.required]],
+        password: [
+          '',
+          [Validators.required, Validators.pattern(passwordRegex)],
+        ],
+        repeatPassword: [''],
+      },
+      {
+        validators: [this.passwordsMatchValidator()],
+      },
+    );
+  }
+
+  passwordsMatchValidator(): ValidatorFn {
+    return (form): ValidationErrors | null => {
+      const password = form.get('password')?.value;
+      const repeatPassword = form.get('repeatPassword')?.value;
+
+      if (password !== repeatPassword) {
+        return { passwordMismatch: true };
+      }
+      return null;
+    };
   }
 
   onNoClick(): void {

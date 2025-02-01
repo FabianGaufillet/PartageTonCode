@@ -5,6 +5,7 @@ import { ApiResponse } from '../interfaces/api-response';
 import { UserDal } from '../dal/user.dal';
 import { SignupForm } from '../interfaces/signup-form';
 import { UpdatedUserForm } from '../interfaces/updated-user-form';
+import { ChangePassword } from '../interfaces/change-password';
 
 @Injectable({
   providedIn: 'root',
@@ -56,6 +57,10 @@ export class UserService {
 
   public resetPassword(email: string): Observable<ApiResponse> {
     return this.userDal.resetPassword(email);
+  }
+
+  public changePassword(form: ChangePassword): Observable<ApiResponse> {
+    return this.userDal.changePassword(form);
   }
 
   public getAllUsers(page: number): Observable<ApiResponse> {

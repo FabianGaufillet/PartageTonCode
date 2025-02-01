@@ -1,5 +1,4 @@
 <p class="mt-5">Ici, sont regroupées vos informations personnelles. Vous pouvez les modifier à tout instant. Pour modifier votre mot de passe, cliquez sur le bouton <span class="font-bold">Changer mon mot de passe</span>. Par mesure de sécurité, vous devrez renseigner votre mot de passe actuel avant de pouvoir procéder à la modification.</p>
-<p class="mt-5">Vous pouvez également supprimer votre compte en cliquant sur le bouton <span class="font-bold">Supprimer mon compte</span>. Pour des mesures de sécurité, il vous sera également demandé de renseigner votre mot de passe actuel pour procéder à cette opération.</p>
 
 @if (!isLoading) {
   <form class="flex flex-col space-y-5 min-w-96 max-w-lg mt-5" [formGroup]="userForm">
@@ -94,8 +93,7 @@
 
     <div class="flex flex-col">
       <button mat-raised-button type="submit" color="primary" [disabled]="userForm.invalid" (click)="save()">Enregistrer les modifications</button>
-      <button mat-raised-button color="primary" (click)="openDialog('changePassword')">Changer mon mot de passe</button>
-      <button mat-raised-button color="primary" (click)="openDialog('deleteAccount')">Supprimer mon compte</button>
+      <button mat-raised-button color="primary" (click)="openDialog()">Changer mon mot de passe</button>
     </div>
 
   </form>

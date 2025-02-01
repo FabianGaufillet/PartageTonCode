@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../interfaces/api-response';
 import { SigninForm } from '../interfaces/signin-form';
 import { UpdatedUserForm } from '../interfaces/updated-user-form';
+import { ChangePassword } from '../interfaces/change-password';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,7 @@ export class UserDal {
   private readonly resetPasswordUrl = `${environment.apiUrl}/user/reset-password`;
   private readonly updateUserUrl = `${environment.apiUrl}/user/update`;
   private readonly allUsersUrl = `${environment.apiUrl}/user/allUsers`;
+  private readonly changePasswordUrl = `${environment.apiUrl}/user/change-password`;
 
   constructor() {}
 
@@ -58,6 +60,13 @@ export class UserDal {
     return this.httpClient.post(this.checkPasswordUrl, {
       password,
     }) as Observable<ApiResponse>;
+  }
+
+  changePassword(form: ChangePassword): Observable<ApiResponse> {
+    return this.httpClient.put(
+      this.changePasswordUrl,
+      form,
+    ) as Observable<ApiResponse>;
   }
 
   signout(): Observable<ApiResponse> {

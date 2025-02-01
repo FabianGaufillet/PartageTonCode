@@ -30,6 +30,7 @@ import { nanoid } from 'nanoid';
 import { UploadService } from '../services/upload.service';
 import { UpdatedUserForm } from '../interfaces/updated-user-form';
 import { HtmlDecodePipe } from '../pipes/html-decode.pipe';
+import { ChangePassword } from '../interfaces/change-password';
 
 @Component({
   selector: 'app-account',
@@ -58,12 +59,11 @@ export class AccountComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
 
   private htmlDecodePipe = inject(HtmlDecodePipe);
-  private action: string = '';
   private fileList?: FileList;
   private fileUpload?: MatFileUploadComponent;
   private userSubscription?: Subscription;
   private dialogSubscription?: Subscription;
-  private checkPasswordSubscription?: Subscription;
+  private changePasswordSubscription?: Subscription;
   private updatedUserSubscription?: Subscription;
 
   public isLoading = true;
@@ -145,28 +145,25 @@ export class AccountComponent implements OnInit, OnDestroy {
     this.fileList = fileList;
   }
 
-  openDialog(action: string) {
+  openDialog() {
     if (this.dialogSubscription) {
       this.dialogSubscription.unsubscribe();
     }
 
-    this.action = action;
     const dialogRef = this.dialog.open(AskPasswordComponent, {});
 
     this.dialogSubscription = dialogRef.afterClosed().subscribe({
-      next: (result: string) => {
-        if (result) {
-          if (this.action === 'deleteAccount') {
-            this.deleteAccount(result);
-          } else if (this.action === 'changePassword') {
-            this.changePassword(result);
-          }
-        }
+      next: (result: FormGroup) => {
+        this.changePassword(result.value);
       },
-      error: (error: any) => {
-        this.snackBar.open(error, 'OK', {
-          duration: 5000,
-        });
+      error: () => {
+        this.snackBar.open(
+          'Désolé, une erreur inattendue vient de se produire. Réessayez plus tard.',
+          'OK',
+          {
+            duration: 5000,
+          },
+        );
       },
     });
   }
@@ -249,34 +246,27 @@ export class AccountComponent implements OnInit, OnDestroy {
     return this.uploadService.uploadFile(fileList[0], nanoid());
   }
 
-  changePassword(result: string) {
-    if (this.checkPasswordSubscription) {
-      this.checkPasswordSubscription.unsubscribe();
+  changePassword(result: ChangePassword) {
+    if (this.changePasswordSubscription) {
+      this.changePasswordSubscription.unsubscribe();
     }
-    this.checkPasswordSubscription = this.userService
-      .checkPassword(result)
+    console.log(result);
+    this.changePasswordSubscription = this.userService
+      .changePassword(result)
       .subscribe({
         next: () => {
-          console.log('password is correct');
+          this.snackBar.open('Votre mot de passe a bien été modifié.', 'OK', {
+            duration: 2000,
+          });
         },
         error: () => {
-          console.log('password is incorrect');
-        },
-      });
-  }
-
-  deleteAccount(result: string) {
-    if (this.checkPasswordSubscription) {
-      this.checkPasswordSubscription.unsubscribe();
-    }
-    this.checkPasswordSubscription = this.userService
-      .checkPassword(result)
-      .subscribe({
-        next: () => {
-          console.log('password is correct');
-        },
-        error: () => {
-          console.log('password is incorrect');
+          this.snackBar.open(
+            'Désolé, une erreur est survenue, veuillez réessayer.',
+            'OK',
+            {
+              duration: 2000,
+            },
+          );
         },
       });
   }
@@ -304,8 +294,8 @@ export class AccountComponent implements OnInit, OnDestroy {
     if (this.dialogSubscription) {
       this.dialogSubscription.unsubscribe();
     }
-    if (this.checkPasswordSubscription) {
-      this.checkPasswordSubscription.unsubscribe();
+    if (this.changePasswordSubscription) {
+      this.changePasswordSubscription.unsubscribe();
     }
     if (this.updatedUserSubscription) {
       this.updatedUserSubscription.unsubscribe();
