@@ -63,7 +63,10 @@ export class UserService {
     return this.userDal.changePassword(form);
   }
 
-  public getAllUsers(page: number, search?: string): Observable<ApiResponse> {
-    return this.userDal.getAllUsers(page, search);
+  public allPotentialFriends(
+    page: number,
+    search?: string,
+  ): Observable<ApiResponse> {
+    return this.userDal.allPotentialFriends(page, search);
   }
 }

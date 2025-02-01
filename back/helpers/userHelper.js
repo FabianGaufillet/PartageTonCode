@@ -16,12 +16,64 @@ export const getUserById = async (id) => {
   }
 };
 
-export const getAllUsers = async (query, options) => {
+export const getAllPotentialFriends = async (user, match, options) => {
   try {
-    const allUsers = await User.paginate(query, options);
+    const agg = match ? [{ $match: match }] : [];
+    agg.push(
+      {
+        $lookup: {
+          from: "relationships",
+          localField: "_id",
+          foreignField: "user",
+          as: "relationships",
+        },
+      },
+      {
+        $unwind: {
+          path: "$relationships",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $and: [
+            {
+              _id: {
+                $ne: user._id,
+              },
+            },
+            {
+              "relationships.friends": {
+                $nin: [user._id],
+              },
+            },
+            {
+              "relationships.pendings": {
+                $nin: [user._id],
+              },
+            },
+            {
+              "relationships.ignored": {
+                $nin: [user._id],
+              },
+            },
+          ],
+        },
+      },
+    );
+    const aggregate = User.aggregate(agg);
+    const allUsers = await User.aggregatePaginate(aggregate, options);
     if (!allUsers.totalDocs) {
       return { status: 404, message: "No users found", data: null };
     }
+    const excludedIds = [
+      user.relationships.friends.map((friend) => String(friend._id)),
+      user.relationships.pendings.map((friend) => String(pending._id)),
+      user.relationships.ignored.map((ignore) => String(ignore._id)),
+    ];
+    const docs = allUsers.docs.filter(
+      (doc) => !excludedIds.includes(String(doc._id)),
+    );
     return { status: 200, message: "Users found", data: allUsers };
   } catch (error) {
     return { status: 500, message: error.message, data: error };

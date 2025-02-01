@@ -26,6 +26,8 @@ import { HtmlDecodePipe } from '../../pipes/html-decode.pipe';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { RelationshipsService } from '../../services/relationships.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-search-friend',
@@ -46,10 +48,13 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
   private readonly userService = inject(UserService);
+  private readonly relationshipsService = inject(RelationshipsService);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly htmlDecodePipe = inject(HtmlDecodePipe);
 
   private userServiceSubscription?: Subscription;
   private searchSubscription?: Subscription;
+  private friendshipSubscription?: Subscription;
 
   public displayedColumns: string[] = ['username', 'name', 'email', 'actions'];
   public isLoadingResults = true;
@@ -87,7 +92,7 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
         startWith({}),
         switchMap(() => {
           const page = this.paginator?.pageIndex as number;
-          return this.userService.getAllUsers(page + 1);
+          return this.userService.allPotentialFriends(page + 1);
         }),
         map((result: ApiResponse) => {
           this.isLoadingResults = false;
@@ -99,8 +104,10 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (response: any) => {
           this.users = response;
         },
-        error: (error: any) => {
-          console.log(error);
+        error: () => {
+          this.isLoadingResults = false;
+          this.users = [];
+          this.resultsLength = 0;
         },
         complete: () => {},
       });
@@ -113,14 +120,14 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isLoadingResults = true;
     this.userServiceSubscription = this.userService
-      .getAllUsers(1, filterValue ?? '')
+      .allPotentialFriends(1, filterValue ?? '')
       .subscribe({
         next: (response: ApiResponse) => {
           this.isLoadingResults = false;
           this.users = response.data['docs'] as User[];
           this.resultsLength = response.data['totalDocs'] as number;
         },
-        error: (error) => {
+        error: () => {
           this.isLoadingResults = false;
           this.users = [];
           this.resultsLength = 0;
@@ -128,8 +135,26 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  addFriend(user: User) {
-    console.log('add friend');
+  addFriend(userId: string) {
+    if (this.friendshipSubscription) {
+      this.friendshipSubscription.unsubscribe();
+    }
+
+    this.friendshipSubscription = this.relationshipsService
+      .askForFriendship(userId)
+      .subscribe({
+        next: () => {
+          this.snackBar.open("Demande d'ami envoyée avec succès !", 'OK', {
+            duration: 2000,
+          });
+        },
+        error: () => {
+          this.snackBar.open('Désole, une erreur est survenue', 'OK', {
+            duration: 2000,
+          });
+        },
+        complete: () => {},
+      });
   }
 
   formatAvatarUrl(avatar: [string]) {
@@ -151,6 +176,9 @@ export class SearchFriendComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.searchSubscription) {
       this.searchSubscription.unsubscribe();
+    }
+    if (this.friendshipSubscription) {
+      this.friendshipSubscription.unsubscribe();
     }
   }
 }

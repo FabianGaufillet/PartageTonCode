@@ -7,6 +7,7 @@ import {
   userNameMinLength,
 } from "../utils/constants.js";
 import mongoosePaginate from "mongoose-paginate-v2";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const validateEmail = (email) => {
   return emailRegex.test(email);
@@ -87,6 +88,7 @@ userSchema.plugin(passportLocalMongoose, {
   maxAttempts: 5,
 });
 userSchema.plugin(mongoosePaginate);
+userSchema.plugin(mongooseAggregatePaginate);
 
 const User = mongoose.model("users", userSchema);
 export default User;

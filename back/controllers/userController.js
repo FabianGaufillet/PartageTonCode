@@ -30,17 +30,18 @@ export const getUserById = async (req, res) => {
   }
 };
 
-export const getAllUsers = async (req, res) => {
+export const getAllPotentialFriends = async (req, res) => {
   try {
     const { page, limit, search } = req.query;
-    const query = search ? { username: new RegExp(search, "i") } : {};
+    const match = search ? { username: new RegExp(search, "i") } : null;
     const options = {
       page: page || 1,
       limit: limit || 10,
       sort: { username: 1 },
     };
-    const { status, message, data } = await userHelper.getAllUsers(
-      query,
+    const { status, message, data } = await userHelper.getAllPotentialFriends(
+      req.user,
+      match,
       options,
     );
     return res.status(status).json({ message, data });

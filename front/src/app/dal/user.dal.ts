@@ -21,7 +21,7 @@ export class UserDal {
   private readonly checkPasswordUrl = `${environment.apiUrl}/user/check-password`;
   private readonly resetPasswordUrl = `${environment.apiUrl}/user/reset-password`;
   private readonly updateUserUrl = `${environment.apiUrl}/user/update`;
-  private readonly allUsersUrl = `${environment.apiUrl}/user/allUsers`;
+  private readonly allPotentialFriendsUrl = `${environment.apiUrl}/user/allPotentialFriends`;
   private readonly changePasswordUrl = `${environment.apiUrl}/user/change-password`;
 
   constructor() {}
@@ -79,9 +79,10 @@ export class UserDal {
     }) as Observable<ApiResponse>;
   }
 
-  getAllUsers(page: number, search?: string): Observable<ApiResponse> {
+  allPotentialFriends(page: number, search?: string): Observable<ApiResponse> {
     return this.httpClient.get(
-      `${this.allUsersUrl}?page=${page}` + (search ? `&search=${search}` : ''),
+      `${this.allPotentialFriendsUrl}?page=${page}` +
+        (search ? `&search=${search}` : ''),
     ) as Observable<ApiResponse>;
   }
 }

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export const validateStrangerId = (req, res, next) => {
   const { strangerId } = req.params;
-  if (!strangerId || !(strangerId instanceof mongoose.Types.ObjectId)) {
+  if (!strangerId) {
     return res
       .status(422)
       .json({ message: "Stranger id is required", data: null });
@@ -94,7 +94,7 @@ export const isUserAlreadyFriendWith = (req, res, next) => {
 };
 
 export const isFriendshipAlreadyAsked = (req, res, next) => {
-  if (req.stranger.relationships.pending.includes(req.user._id)) {
+  if (req.stranger.relationships.pendings.includes(req.user._id)) {
     return next({
       status: 403,
       message: "You have already asked this user for friendship",

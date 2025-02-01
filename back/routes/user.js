@@ -1,15 +1,17 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
 import * as userMiddleware from "../middlewares/userMiddleware.js";
+import * as relationshipMiddleware from "../middlewares/relationshipMiddleware.js";
 import validationResult from "../middlewares/validationResult.js";
 import * as userValidator from "../validators/userValidator.js";
 
 const router = express.Router();
 
 router.get(
-  "/allUsers",
+  "/allPotentialFriends",
   userMiddleware.isAuthenticated,
-  userController.getAllUsers,
+  relationshipMiddleware.getRelationships,
+  userController.getAllPotentialFriends,
 );
 router.get("/status", userController.userStatus);
 router.get("/signout", userMiddleware.isAuthenticated, userController.signout);
