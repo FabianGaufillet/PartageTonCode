@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const suggestionSchema = new mongoose.Schema({
   by: {
@@ -42,6 +44,9 @@ const relationshipSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+relationshipSchema.plugin(mongoosePaginate);
+relationshipSchema.plugin(mongooseAggregatePaginate);
 
 const Relationship = mongoose.model("relationships", relationshipSchema);
 export default Relationship;

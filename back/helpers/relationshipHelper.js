@@ -1,8 +1,32 @@
 import Relationship from "../models/Relationship.model.js";
 
-export const getRelationships = async (query, populate) => {
+export const getRelationships = async (userId, type, options) => {
   try {
-    const relationships = await Relationship.find(query).populate(populate);
+    const agg = [
+      {
+        $match: {
+          _id: userId,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          [type]: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: `$${type}`,
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+
+    const aggregate = Relationship.aggregate(agg);
+    const relationships = await Relationship.aggregatePaginate(
+      aggregate,
+      options,
+    );
     if (!relationships) {
       return { status: 404, message: "No relationships found", data: null };
     }

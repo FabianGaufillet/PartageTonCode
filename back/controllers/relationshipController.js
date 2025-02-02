@@ -1,27 +1,30 @@
 import * as relationshipHelper from "../helpers/relationshipHelper.js";
 
-const getPopulate = (type) => {
+const sortBy = (type) => {
   return "suggested" === type
-    ? [
-        { path: "suggested.by", sort: { username: 1 } },
-        { path: "suggested.user", sort: { username: 1 } },
-      ]
-    : [{ path: type, sort: { username: 1 } }];
+    ? { "suggested.by": 1, "suggested.user": 1 }
+    : { [type]: 1 };
 };
 
 export const getRelationships = async (req, res) => {
   try {
     const { userId } = req.params;
+    const { page, limit } = req.query;
     const type =
-      req.params.type || req.originalUrl.contains("friends") ? "friends" : null;
+      req.params.type || req.originalUrl.includes("friends") ? "friends" : null;
     if (!userId || !type) {
       return res.status(422).json({ message: "User id and type are required" });
     }
     const query = { user: userId };
-    const populate = getPopulate(type);
+    const options = {
+      page: page || 1,
+      limit: limit || 10,
+      sort: sortBy(type),
+    };
     const { status, message, data } = await relationshipHelper.getRelationships(
-      query,
-      populate,
+      userId,
+      type,
+      options,
     );
     return res.status(status).json({ message, data });
   } catch (error) {

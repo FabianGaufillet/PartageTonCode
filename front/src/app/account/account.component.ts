@@ -78,7 +78,7 @@ export class AccountComponent implements OnInit, OnDestroy {
     this.userSubscription = this.userService
       .userStatus()
       .pipe(
-        switchMap((userStatus) => {
+        switchMap((userStatus: ApiResponse) => {
           return this.userService.userInfos(userStatus.data['_id'] as string);
         }),
       )

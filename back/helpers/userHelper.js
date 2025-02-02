@@ -18,6 +18,12 @@ export const getUserById = async (id) => {
 
 export const getAllPotentialFriends = async (user, match, options) => {
   try {
+    const excludedIds = [
+      user._id,
+      user.relationships.friends.map((friend) => friend._id),
+      user.relationships.pendings.map((pending) => pending._id),
+      user.relationships.ignored.map((ignore) => ignore._id),
+    ].flat();
     const agg = match ? [{ $match: match }] : [];
     agg.push(
       {
@@ -39,7 +45,7 @@ export const getAllPotentialFriends = async (user, match, options) => {
           $and: [
             {
               _id: {
-                $ne: user._id,
+                $nin: excludedIds,
               },
             },
             {
@@ -66,15 +72,11 @@ export const getAllPotentialFriends = async (user, match, options) => {
     if (!allUsers.totalDocs) {
       return { status: 404, message: "No users found", data: null };
     }
-    const excludedIds = [
-      user.relationships.friends.map((friend) => String(friend._id)),
-      user.relationships.pendings.map((friend) => String(pending._id)),
-      user.relationships.ignored.map((ignore) => String(ignore._id)),
-    ];
-    const docs = allUsers.docs.filter(
-      (doc) => !excludedIds.includes(String(doc._id)),
-    );
-    return { status: 200, message: "Users found", data: allUsers };
+    return {
+      status: 200,
+      message: "Users found",
+      data: allUsers,
+    };
   } catch (error) {
     return { status: 500, message: error.message, data: error };
   }

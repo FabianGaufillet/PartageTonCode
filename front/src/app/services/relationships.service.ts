@@ -11,6 +11,10 @@ export class RelationshipsService {
 
   constructor() {}
 
+  public getMyFriends(userId: string, page: number): Observable<ApiResponse> {
+    return this.relationshipsDal.getMyFriends(userId, page);
+  }
+
   public askForFriendship(strangerId: string): Observable<ApiResponse> {
     return this.relationshipsDal.askForFriendship(strangerId);
   }
